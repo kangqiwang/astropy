@@ -14,7 +14,7 @@ import numpy as np
 import astropy.cosmology.units as cu
 import astropy.units as u
 from astropy.cosmology._src.core import Cosmology
-from astropy.cosmology.connect import readwrite_registry
+from astropy.cosmology._src.io.connect import readwrite_registry
 from astropy.io.typing import PathLike, ReadableFileLike, WriteableFileLike
 from astropy.table import QTable
 from astropy.table.serialize import represent_mixins_as_columns
@@ -29,6 +29,21 @@ if TYPE_CHECKING:
     from astropy.table import Table
 
     _TableT = TypeVar("_TableT", "Table")
+
+_FORMAT_TABLE = {
+    "H0": "$$H_{0}$$",
+    "Om0": "$$\\Omega_{m,0}$$",
+    "Ode0": "$$\\Omega_{\\Lambda,0}$$",
+    "Tcmb0": "$$T_{0}$$",
+    "Neff": "$$N_{eff}$$",
+    "m_nu": "$$m_{nu}$$",
+    "Ob0": "$$\\Omega_{b,0}$$",
+    "w0": "$$w_{0}$$",
+    "wa": "$$w_{a}$$",
+    "wz": "$$w_{z}$$",
+    "wp": "$$w_{p}$$",
+    "zp": "$$z_{p}$$",
+}
 
 
 def read_mrt(
@@ -122,5 +137,30 @@ def write_mrt(
     table.write(file, overwrite=overwrite, format="ascii.mrt", **kwargs)
 
 
+def mrt_identify(
+    origin: object, filepath: object, *args: object, **kwargs: object
+) -> bool:
+    """Identify if an object uses the HTML Table format.
+
+    Parameters
+    ----------
+    origin : object
+        Not used.
+    filepath : object
+        From where to read the Cosmology.
+    *args : object
+        Not used.
+    **kwargs : object
+        Not used.
+
+    Returns
+    -------
+    bool
+        If the filepath is a string ending with '.mrt'.
+    """
+    return isinstance(filepath, str) and filepath.endswith(".mrt")
+
+
 readwrite_registry.register_reader("ascii.mrt", Cosmology, read_mrt)
 readwrite_registry.register_writer("ascii.mrt", Cosmology, write_mrt)
+readwrite_registry.register_identifier("ascii.mrt", Cosmology, mrt_identify)

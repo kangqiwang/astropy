@@ -4,7 +4,10 @@
 import pytest
 
 # LOCAL
-from astropy.cosmology.io.mrt import read_mrt, write_mrt
+from astropy.cosmology._src.io.builtin.mrt import (
+    read_mrt,
+    write_mrt,
+)
 from astropy.table import QTable, Table
 
 from .base import ReadWriteDirectTestBase, ReadWriteTestMixinBase
